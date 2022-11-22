@@ -16,6 +16,7 @@ class ConcatBdt(IStep):
                         concat_columns.append(F.col(ref.get('value')))
                     else:
                         concat_columns.append(F.lit(ref.get('value')))
+                    concat_columns.append(F.lit(' '))
 
                 df = df.withColumn(bdt_name, F.concat(*concat_columns))
 
