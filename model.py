@@ -11,7 +11,7 @@ class Reference(BaseModel):
 class BdtInstance(BaseModel):
     form: Union[Literal['raw'], Literal['canonized'], Literal['transliterated'], Literal['translated']] = 'raw'
     references: List[Reference]
-    roles: List[str] = []
+    roles: Optional[List[str]] = []
     entity_id: Optional[str]
     date_type: Optional[Union[Literal['point'], Literal['start'], Literal['end']]]
 
@@ -25,5 +25,5 @@ class ConditionalTagging(BaseModel):
 
 class Model(BaseModel):
     tagging: Dict[str, List[BdtInstance]]
-    lambdas_props: Dict[str, Dict[str, Any]] = {}
-    conditions: List[ConditionalTagging] = []
+    lambdas_props: Optional[Dict[str, Dict[str, Any]]] = {}
+    conditions: Optional[List[ConditionalTagging]] = []
