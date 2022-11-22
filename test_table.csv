@@ -1,2 +1,2 @@
-id,pstn,imei,fullest_name
-'','','',''
+id,pstn,imei,fullest_name1,fullest_name2
+,,,f1,f2
