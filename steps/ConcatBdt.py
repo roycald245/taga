@@ -1,7 +1,9 @@
-from copy import deepcopy
-from model import Model
-from steps.IStep import IStep
+import uuid
+
 import pyspark.sql.functions as F
+
+from model import Model, COLUMN, Reference
+from steps.IStep import IStep
 
 
 class ConcatBdt(IStep):
@@ -10,18 +12,18 @@ class ConcatBdt(IStep):
 
     def process(self, df):
         for bdt_name, bdt_instances in self.model.tagging.items():
-            bdt_instances_new = deepcopy(bdt_instances)
-            for instance in bdt_instances_new:
+            for instance in bdt_instances:
                 if len(instance.references) > 1:
                     concat_columns = []
                     for index, ref in enumerate(instance.references):
-                        if ref.type == 'column':
+                        if ref.type == COLUMN:
                             concat_columns.append(F.col(ref.value))
                         else:
                             concat_columns.append(F.lit(ref.value))
-                        if index != len(instance.references)-1:
+                        if index != len(instance.references) - 1:
                             concat_columns.append(F.lit(' '))
-
-                    df = df.withColumn(bdt_name, F.concat(*concat_columns))
+                    column_name = str(uuid.uuid4())
+                    df = df.withColumn(column_name, F.concat(*concat_columns))
+                    instance.references = [*instance.references, Reference(type=COLUMN, value=column_name)]
 
         return df, self.model

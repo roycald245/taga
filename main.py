@@ -10,3 +10,4 @@ if __name__ == '__main__':
     df = spark.read.csv('./test_table.csv', header=True)
     df, model = execute_workflow(df, Model(**TEST_MODEL))
     df.show()
+    print(model.dict())
