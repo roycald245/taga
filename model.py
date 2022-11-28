@@ -2,18 +2,29 @@ from typing import Union, Literal, List, Dict, Optional, Any
 
 from pydantic import BaseModel
 
+raw = 'raw'
+canonized = 'canonized'
+transliterated = 'transliterated'
+translated = 'translated'
+constant = 'constant'
+column = 'column'
+point = 'point'
+start = 'start'
+end = 'end'
+
 
 class Reference(BaseModel):
     value: str
-    type: Union[Literal['column'], Literal['constant']]
+
+    type: Union[Literal[column], Literal[constant]]
 
 
 class BdtInstance(BaseModel):
-    form: Union[Literal['raw'], Literal['canonized'], Literal['transliterated'], Literal['translated']] = 'raw'
+    form: Union[Literal[raw], Literal[canonized], Literal[transliterated], Literal[translated]] = raw
     references: List[Reference]
     roles: Optional[List[str]] = []
     entity_id: Optional[str]
-    date_type: Optional[Union[Literal['point'], Literal['start'], Literal['end']]]
+    date_type: Optional[Union[Literal[point], Literal[start], Literal[end]]]
 
 
 class ConditionalTagging(BaseModel):
