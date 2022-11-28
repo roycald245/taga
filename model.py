@@ -18,7 +18,7 @@ class BdtInstance(BaseModel):
 
 class ConditionalTagging(BaseModel):
     condition_column: str
-    columns_to_tag: List[Reference]
+    column_to_tag: str
     values_mapping: Dict[str, str]
     default_tagging: Optional[str]
 
