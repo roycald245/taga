@@ -1,5 +1,3 @@
-from functools import reduce
-
 from model import Model
 from steps.IStep import IStep
 import pyspark.sql.functions as F
@@ -26,4 +24,4 @@ class ConditionalTagging(IStep):
                 df = df.withColumn(bdt, F.when(generate_condition_from_values(values, condition.condition_column),
                                                F.col(condition.column_to_tag.value)).otherwise(
                     condition.default_tagging))
-        return df
+        return df, self.model

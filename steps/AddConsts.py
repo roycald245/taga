@@ -1,3 +1,5 @@
+from pyspark.sql import DataFrame
+
 from model import Model
 from steps.IStep import IStep
 import pyspark.sql.functions as F
@@ -7,7 +9,7 @@ class AddConsts(IStep):
     def __init__(self, model: Model):
         self.model = model
 
-    def process(self, df):
+    def process(self, df: DataFrame):
         for bdt_name, instances in self.model.tagging.items():
             for instance in instances:
                 for ref in instance.references:
