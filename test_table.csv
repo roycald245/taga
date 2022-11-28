@@ -1,4 +1,4 @@
-id,pstn,imei,fullest_name1,fullest_name2
-,,,f1,f2
-,,,fff1,ff2
-sadfju,,,,
+id,pstn,imei,fullest_name1,fullest_name2,pstn_type
+,123,,f1,f2,voip
+,456,,fff1,ff2,personal
+sadfju,789,,,,personal

@@ -40,5 +40,12 @@ TEST_MODEL = {
                 {'type': 'column', 'value': 'pstn'}
             ]
         }]
-    }
+    },
+    'conditions': [
+        {
+            'condition_column': 'pstn_type',
+            'column_to_tag': {'type': 'column', 'value': 'pstn'},
+            'bdt_to_values': {'voip_number': ['voip'], 'personal_pstn': ['personal']}
+        }
+    ]
 }
