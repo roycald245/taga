@@ -6,6 +6,7 @@ RAW = 'raw'
 CANONIZED = 'canonized'
 TRANSLITERATED = 'transliterated'
 TRANSLATED = 'translated'
+CONCATED = 'concated'
 CONSTANT = 'constant'
 COLUMN = 'column'
 POINT = 'point'
@@ -24,6 +25,7 @@ class BdtInstance(BaseModel):
     roles: Optional[List[str]] = []
     entity_id: Optional[str]
     date_type: Optional[Union[Literal[POINT], Literal[START], Literal[END]]]
+    original_columns: Optional[List[str]] = []
 
 
 class ConditionalTagging(BaseModel):
@@ -33,7 +35,12 @@ class ConditionalTagging(BaseModel):
     default_tagging: Optional[str]
 
 
+class Tagging(Dict[str, List[BdtInstance]]):
+    pass
+
+
 class Model(BaseModel):
-    tagging: Dict[str, List[BdtInstance]]
+    tagging: Optional[Tagging]
+    anonymous_tagging: Optional[Tagging]
     lambdas_props: Optional[Dict[str, Dict[str, Any]]] = {}
     conditions: Optional[List[ConditionalTagging]] = []
