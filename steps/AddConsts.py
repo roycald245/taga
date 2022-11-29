@@ -1,9 +1,10 @@
 import uuid
 from collections import defaultdict
+from typing import List, Dict
 
 from pyspark.sql import DataFrame
 
-from model import Model, Reference, COLUMN, CONSTANT, Tagging
+from model import Model, Reference, COLUMN, CONSTANT, BdtInstance
 from steps.IStep import IStep
 import pyspark.sql.functions as f
 
@@ -19,7 +20,8 @@ class AddConsts(IStep):
         return df, output_model
 
     @staticmethod
-    def _apply_add_consts_on_tagging(df: DataFrame, tagging: Tagging) -> (DataFrame, Tagging):
+    def _apply_add_consts_on_tagging(df: DataFrame, tagging: Dict[str, List[BdtInstance]]) -> (
+            DataFrame, Dict[str, List[BdtInstance]]):
         output_tagging = defaultdict(list)
         for bdt_name, instances in tagging.items():
             for instance in instances:
@@ -31,4 +33,4 @@ class AddConsts(IStep):
                     output_tagging[bdt_name].append(output_instance)
                 else:
                     output_tagging[bdt_name].append(output_instance)
-        return df, Tagging(output_tagging)
+        return df, output_tagging

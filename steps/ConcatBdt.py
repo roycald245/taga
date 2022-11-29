@@ -1,10 +1,11 @@
 import uuid
 from collections import defaultdict
+from typing import Dict, List
 
 import pyspark.sql.functions as f
 from pyspark.sql import DataFrame
 
-from model import Model, COLUMN, Reference, Tagging, CONSTANT, BdtInstance, CONCATED
+from model import Model, COLUMN, Reference, CONSTANT, BdtInstance, CONCATED
 from steps.IStep import IStep
 
 
@@ -17,9 +18,10 @@ class ConcatBdt(IStep):
         model = self.model
         df, model.tagging = self._process_tagging(df, model.tagging)
         df, model.anonymous_tagging = self._process_tagging(df, model.anonymous_tagging)
-        return model, df
+        return df, model
 
-    def _process_tagging(self, df: DataFrame, input_tagging: Tagging) -> (DataFrame, Tagging):
+    def _process_tagging(self, df: DataFrame, input_tagging: Dict[str, List[BdtInstance]] = {}) -> (
+            DataFrame, Dict[str, List[BdtInstance]]):
         output_tagging = defaultdict(list)
         for bdt_name, bdt_instances in input_tagging.items():
             for instance in bdt_instances:
@@ -28,13 +30,13 @@ class ConcatBdt(IStep):
                     output_tagging[bdt_name].append(concated_bdt_instance)
                 else:
                     output_tagging[bdt_name].append(instance)
-        return df, Tagging(output_tagging)
+        return df, output_tagging
 
     def _apply_concat_on_instance(self, df: DataFrame, instance: BdtInstance) -> (DataFrame, BdtInstance):
         original_columns = []
         concat_refs = []
 
-        for index, ref in enumerate(instance):
+        for index, ref in enumerate(instance.references):
             if ref.type == COLUMN:
                 original_columns.append(ref.value)
                 concat_refs.append(f.col(ref.value))

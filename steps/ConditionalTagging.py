@@ -11,8 +11,9 @@ class ConditionalTagging(IStep):
 
     def process(self, df: DataFrame) -> (DataFrame, Model):
         for condition in self.model.conditions:
-            for bdt, predicates in condition.bdt_to_predicates_mapping.items():
-                cases = f.when(f.col(condition.condition_column).isin(predicates), f.col(condition.effected_column)) \
-                    .otherwise(condition.default_tagging)
-                df = df.withColumn(bdt, cases)
+            for bdt, predicates in condition.predicates_to_bdts_mapping.items():
+                df = df.withColumn(bdt,
+                                   f.when(f.col(condition.condition_column).isin(predicates),
+                                          f.col(condition.effected_column)) \
+                                   .otherwise(condition.default_bdt)) # Should be none
                 return df, self.model
