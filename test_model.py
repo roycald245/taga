@@ -44,8 +44,8 @@ TEST_MODEL = {
     'conditions': [
         {
             'condition_column': 'pstn_type',
-            'column_to_tag': {'type': 'column', 'value': 'pstn'},
-            'bdt_to_values': {'voip_number': ['voip'], 'personal_pstn': ['personal']}
+            'effected_column': 'pstn',
+            'bdt_to_predicates_mapping': {'voip_number': ['voip'], 'personal_pstn': ['personal']}
         }
     ]
 }

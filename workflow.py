@@ -1,6 +1,4 @@
-from steps.ConditionalTagging import ConditionalTagging
-from steps.AddConsts import AddConsts
-from steps.ConcatBdt import ConcatBdt
+from steps import ConcatBdt, AddConsts, ConditionalTagging
 
 
 def execute_workflow(df, model):

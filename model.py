@@ -30,8 +30,8 @@ class BdtInstance(BaseModel):
 
 class ConditionalTagging(BaseModel):
     condition_column: str
-    column_to_tag: Reference
-    bdt_to_values: Dict[str, List[str]]
+    effected_column: str
+    bdt_to_predicates_mapping: Dict[str, List[str]]
     default_tagging: Optional[str]
 
 
