@@ -31,7 +31,7 @@ class BdtInstance(BaseModel):
 class ConditionalTagging(BaseModel):
     condition_column: str
     effected_column: str
-    predicates_to_bdts_mapping: Dict[str, List[str]]
+    predicates_to_bdts_mapping: Dict[str, str]
     default_bdt: Optional[str]
 
 
@@ -39,4 +39,4 @@ class Model(BaseModel):
     tagging: Optional[Dict[str, List[BdtInstance]]] = {}
     anonymous_tagging: Optional[Dict[str, List[BdtInstance]]] = {}
     lambdas_props: Optional[Dict[str, Dict[str, Any]]] = {}
-    conditions: Optional[List[ConditionalTagging]] = []
+    conditions: Optional[Dict[str, ConditionalTagging]] = {}

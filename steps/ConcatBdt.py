@@ -26,13 +26,14 @@ class ConcatBdt(IStep):
         for bdt_name, bdt_instances in input_tagging.items():
             for instance in bdt_instances:
                 if len(instance.references) > 1:
-                    df, concated_bdt_instance = self._apply_concat_on_instance(df, instance)
+                    df, concated_bdt_instance = self._apply_concat_on_instance(df, instance, bdt_name)
                     output_tagging[bdt_name].append(concated_bdt_instance)
                 else:
                     output_tagging[bdt_name].append(instance)
         return df, output_tagging
 
-    def _apply_concat_on_instance(self, df: DataFrame, instance: BdtInstance) -> (DataFrame, BdtInstance):
+    def _apply_concat_on_instance(self, df: DataFrame, instance: BdtInstance, bdt_name: str) -> (
+            DataFrame, BdtInstance):
         original_columns = []
         concat_refs = []
 
@@ -45,11 +46,11 @@ class ConcatBdt(IStep):
             if index != len(instance.references) - 1:
                 concat_refs.append(f.lit(self.concat_delimiter))
 
-        column_name = str(uuid.uuid4())
-        df = df.withColumn(column_name, f.concat(*concat_refs))
+        generated_column_name = f'{bdt_name}~{str(uuid.uuid4())}'
+        df = df.withColumn(generated_column_name, f.concat(*concat_refs))
 
         output_instance = instance.copy(deep=True)
         output_instance.form = CONCATED
-        output_instance.references = [Reference(type=COLUMN, value=column_name)]
+        output_instance.references = [Reference(type=COLUMN, value=generated_column_name)]
         output_instance.original_columns = original_columns
         return df, output_instance

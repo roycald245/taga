@@ -27,9 +27,9 @@ class AddConsts(IStep):
             for instance in instances:
                 output_instance = instance.copy(deep=True)
                 if len(instance.references) == 1 and instance.references[0].type == CONSTANT:
-                    column_name = str(uuid.uuid4())
-                    df = df.withColumn(column_name, f.lit(instance.references[0].value))
-                    output_instance.references = [Reference(type=COLUMN, value=column_name)]
+                    generated_column_name = f'{bdt_name}~{str(uuid.uuid4())}'
+                    df = df.withColumn(generated_column_name, f.lit(instance.references[0].value))
+                    output_instance.references = [Reference(type=COLUMN, value=generated_column_name)]
                     output_tagging[bdt_name].append(output_instance)
                 else:
                     output_tagging[bdt_name].append(output_instance)
