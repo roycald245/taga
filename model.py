@@ -28,11 +28,18 @@ class BdtInstance(BaseModel):
     original_columns: Optional[List[str]] = []
 
 
+class TagOption(BaseModel):
+    bdt_name: str
+    roles: Optional[List[str]] = []
+    entity_id: Optional[str]
+    date_type: Optional[Union[Literal[POINT], Literal[START], Literal[END]]]
+
+
 class ConditionalTagging(BaseModel):
     condition_column: str
     effected_column: str
-    predicates_to_bdts_mapping: Dict[str, str]
-    default_bdt: Optional[str]
+    predicates_to_tag_options: Dict[str, TagOption]
+    default_tag_option: Optional[TagOption]
 
 
 class Model(BaseModel):
