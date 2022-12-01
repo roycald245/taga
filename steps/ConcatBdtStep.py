@@ -9,7 +9,7 @@ from model import Model, COLUMN, Reference, CONSTANT, BdtInstance, CONCATED
 from steps.IStep import IStep
 
 
-class ConcatBdt(IStep):
+class ConcatBdtsStep(IStep):
     def __init__(self, model: Model, concat_delimiter=' '):
         self.model = model
         self.concat_delimiter = concat_delimiter

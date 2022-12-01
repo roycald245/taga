@@ -1,4 +1,4 @@
-from typing import Union, Literal, List, Dict, Optional, Any
+from typing import Union, Literal, List, Dict, Optional, Any, Dict
 
 from pydantic import BaseModel
 
@@ -56,4 +56,4 @@ class Model(BaseModel):
     tagging: Optional[Dict[str, List[BdtInstance]]] = {}
     anonymous_tagging: Optional[Dict[str, List[BdtInstance]]] = {}
     lambdas_props: Optional[Dict[str, Dict[str, Any]]] = {}
-    conditions: Optional[Dict[str, ConditionalTagging]] = {}
+    conditions: Optional[List[ConditionalTagging]]

@@ -1,11 +1,11 @@
 from pyspark.sql import DataFrame
 
 from model import Model
-from steps import ConcatBdt, AddConsts, ConditionalTagging
+from steps import ConcatBdtsStep, AddConstsStep, ConditionalTaggingStep
 
 
 def execute_workflow(df: DataFrame, model: Model) -> (DataFrame, Model):
-    df, model = ConcatBdt(model).process(df)
-    df, model = AddConsts(model).process(df)
-    df, model = ConditionalTagging(model).process(df)
+    df, model = ConcatBdtsStep(model).process(df)
+    df, model = AddConstsStep(model).process(df)
+    df, model = ConditionalTaggingStep(model).process(df)
     return df, model

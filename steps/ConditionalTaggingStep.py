@@ -1,7 +1,6 @@
 import uuid
 from collections import defaultdict
-from copy import deepcopy
-from typing import Dict, List
+from typing import List, Dict
 
 import pyspark.sql.functions as f
 from pyspark.sql import DataFrame
@@ -83,16 +82,20 @@ def _handle_conditional_tagging(
     return df, generated_tagging
 
 
-class ConditionalTagging(IStep):
+class ConditionalTaggingStep(IStep):
     def __init__(self, model: Model):
         self.model = model
 
     def process(self, df: DataFrame) -> (DataFrame, Model):
+        model = self.model.copy(deep=True)
+
         generated_tagging = defaultdict(list)
-        model = deepcopy(self.model)
-        for conditional_tagging in self.model.conditions.values():
+        for conditional_tagging in self.model.conditions:
             df, generated_tagging = _handle_conditional_tagging(df, conditional_tagging, generated_tagging)
-        for bdt_name, instances in generated_tagging.items():
-            model.tagging[bdt_name].extend(instances)
+
+        for bdt_name, instances in model.tagging.items():
+            generated_tagging[bdt_name].extend(instances)
+        model.tagging = generated_tagging
         model.conditions = None
+
         return df, model

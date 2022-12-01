@@ -25,7 +25,7 @@ def _apply_add_consts_on_tagging(df: DataFrame, tagging: Dict[str, List[BdtInsta
     return df, output_tagging
 
 
-class AddConsts(IStep):
+class AddConstsStep(IStep):
     def __init__(self, model: Model):
         self.model = model
 
