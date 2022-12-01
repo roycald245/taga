@@ -34,6 +34,16 @@ class TagOption(BaseModel):
     entity_id: Optional[str]
     date_type: Optional[Union[Literal[POINT], Literal[START], Literal[END]]]
 
+    def __str__(self) -> str:
+        tag = self.bdt_name
+        if self.date_type:
+            tag = f'{tag}~{self.date_type}'
+        if self.roles:
+            tag = f"{tag}~{'-'.join(self.roles)}"
+        if self.entity_id:
+            tag = f'{tag}~{self.entity_id}'
+        return tag
+
 
 class ConditionalTagging(BaseModel):
     condition_column: str
