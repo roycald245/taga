@@ -1,29 +1,60 @@
-from typing import Union, Literal, List, Dict, Optional, Any
+from typing import Union, Literal, List, Dict, Optional, Any, Dict
 
 from pydantic import BaseModel
+
+RAW = 'raw'
+CANONIZED = 'canonized'
+TRANSLITERATED = 'transliterated'
+TRANSLATED = 'translated'
+CONCATED = 'concated'
+CONSTANT = 'constant'
+COLUMN = 'column'
+POINT = 'point'
+START = 'start'
+END = 'end'
 
 
 class Reference(BaseModel):
     value: str
-    type: Union[Literal['column'], Literal['constant']]
+    type: Union[Literal[COLUMN], Literal[CONSTANT]]
 
 
 class BdtInstance(BaseModel):
-    form: Union[Literal['raw'], Literal['canonized'], Literal['transliterated'], Literal['translated']] = 'raw'
+    form: Union[Literal[RAW], Literal[CANONIZED], Literal[TRANSLITERATED], Literal[TRANSLATED]] = RAW
     references: List[Reference]
-    roles: List[str] = []
+    roles: Optional[List[str]] = []
     entity_id: Optional[str]
-    date_type: Optional[Union[Literal['point'], Literal['start'], Literal['end']]]
+    date_type: Optional[Union[Literal[POINT], Literal[START], Literal[END]]]
+    original_columns: Optional[List[str]] = []
+
+
+class TagOption(BaseModel):
+    predicates: Optional[List[str]] = []
+    bdt_name: str
+    roles: Optional[List[str]] = []
+    entity_id: Optional[str]
+    date_type: Optional[Union[Literal[POINT], Literal[START], Literal[END]]]
+
+    def __str__(self) -> str:
+        tag = self.bdt_name
+        if self.date_type:
+            tag = f'{tag}~{self.date_type}'
+        if self.roles:
+            tag = f"{tag}~{'-'.join(self.roles)}"
+        if self.entity_id:
+            tag = f'{tag}~{self.entity_id}'
+        return tag
 
 
 class ConditionalTagging(BaseModel):
     condition_column: str
-    column_to_tag: str
-    values_mapping: Dict[str, str]
-    default_tagging: Optional[str]
+    effected_column: str
+    options: List[TagOption]
+    default_option: Optional[TagOption]
 
 
 class Model(BaseModel):
-    tagging: Dict[str, List[BdtInstance]]
-    lambdas_props: Dict[str, Dict[str, Any]] = {}
-    conditions: List[ConditionalTagging] = []
+    tagging: Optional[Dict[str, List[BdtInstance]]] = {}
+    anonymous_tagging: Optional[Dict[str, List[BdtInstance]]] = {}
+    lambdas_props: Optional[Dict[str, Dict[str, Any]]] = {}
+    conditions: Optional[List[ConditionalTagging]] = []
