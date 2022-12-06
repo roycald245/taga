@@ -1,3 +1,4 @@
+import itertools
 import uuid
 from collections import defaultdict
 from typing import List, Dict
@@ -9,32 +10,16 @@ from model import Model, ConditionalTagging, BdtInstance, Reference, COLUMN, Tag
 from steps.IStep import IStep
 
 
-def _map_tag_options_by_names(tag_options: List[TagOption]) -> Dict[str, TagOption]:
-    return {option.__str__(): option for option in tag_options}
-
-
-def _group_predicates_by_tag_options(predicates_to_bdts_options: Dict[str, TagOption]) -> Dict[str, List[str]]:
-    tags_to_predicates = defaultdict(list)
-    for predicate, tag_option in predicates_to_bdts_options.items():
-        tag_name = tag_option.__str__()
-        tags_to_predicates[tag_name].append(predicate)
-    return tags_to_predicates
-
-
 def _handle_regular_options(df: DataFrame,
                             conditional_tagging: ConditionalTagging,
                             generated_tagging=None) -> (DataFrame, Dict[str, List[BdtInstance]]):
     if generated_tagging is None:
         generated_tagging = defaultdict(list)
 
-    tags_to_predicates = _group_predicates_by_tag_options(conditional_tagging.predicates_to_tag_options)
-    mapped_tag_options = _map_tag_options_by_names(list(conditional_tagging.predicates_to_tag_options.values()))
-
-    for tag, predicates in tags_to_predicates.items():
-        option = mapped_tag_options[tag]
-        generated_column_name = f'{tag}~{str(uuid.uuid4())}'
+    for option in conditional_tagging.options:
+        generated_column_name = f'{option.__str__()}~{str(uuid.uuid4())}'
         df = df.withColumn(generated_column_name,
-                           f.when(f.col(conditional_tagging.condition_column).isin(predicates),
+                           f.when(f.col(conditional_tagging.condition_column).isin(option.predicates),
                                   f.col(conditional_tagging.effected_column))
                            .otherwise(None))
         generated_tagging[option.bdt_name].append(BdtInstance(
@@ -47,15 +32,20 @@ def _handle_regular_options(df: DataFrame,
     return df, generated_tagging
 
 
+def summarize_all_predicates(conditional_tagging: ConditionalTagging) -> List[str]:
+    flatmapped_predicates = itertools.chain(*[option.predicates for option in conditional_tagging.options])
+    return list(set(flatmapped_predicates))
+
+
 def _handle_default_option(df: DataFrame,
                            conditional_tagging: ConditionalTagging,
                            generated_tagging=None) -> (DataFrame, Dict[str, List[BdtInstance]]):
     if generated_tagging is None:
         generated_tagging = defaultdict(list)
 
-    if conditional_tagging.default_tag_option:
-        all_the_predicates = list(conditional_tagging.predicates_to_tag_options.keys())
-        option = conditional_tagging.default_tag_option
+    if conditional_tagging.default_option:
+        all_the_predicates = summarize_all_predicates(conditional_tagging)
+        option = conditional_tagging.default_option
         generated_column_name = f'{option.__str__()}~{str(uuid.uuid4())}'
         df = df.withColumn(generated_column_name,
                            f.when(~f.col(conditional_tagging.condition_column).isin(all_the_predicates),
@@ -88,14 +78,13 @@ class ConditionalTaggingStep(IStep):
 
     def process(self, df: DataFrame) -> (DataFrame, Model):
         model = self.model.copy(deep=True)
-
         generated_tagging = defaultdict(list)
+
         for conditional_tagging in self.model.conditions:
             df, generated_tagging = _handle_conditional_tagging(df, conditional_tagging, generated_tagging)
-
         for bdt_name, instances in model.tagging.items():
             generated_tagging[bdt_name].extend(instances)
+
         model.tagging = generated_tagging
         model.conditions = None
-
         return df, model

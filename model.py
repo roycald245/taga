@@ -29,6 +29,7 @@ class BdtInstance(BaseModel):
 
 
 class TagOption(BaseModel):
+    predicates: Optional[List[str]] = []
     bdt_name: str
     roles: Optional[List[str]] = []
     entity_id: Optional[str]
@@ -48,12 +49,12 @@ class TagOption(BaseModel):
 class ConditionalTagging(BaseModel):
     condition_column: str
     effected_column: str
-    predicates_to_tag_options: Dict[str, TagOption]
-    default_tag_option: Optional[TagOption]
+    options: List[TagOption]
+    default_option: Optional[TagOption]
 
 
 class Model(BaseModel):
     tagging: Optional[Dict[str, List[BdtInstance]]] = {}
     anonymous_tagging: Optional[Dict[str, List[BdtInstance]]] = {}
     lambdas_props: Optional[Dict[str, Dict[str, Any]]] = {}
-    conditions: Optional[List[ConditionalTagging]]
+    conditions: Optional[List[ConditionalTagging]] = []

@@ -5,6 +5,7 @@ __pycache__/
 
 .idea/
 .test/_trial_temp/
+.test/_trial_temp/*
 
 # C extensions
 *.so
