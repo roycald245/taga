@@ -1,4 +1,3 @@
-import json
 import unittest
 
 from pyspark.sql import SparkSession
@@ -36,6 +35,40 @@ TEST_MODEL = {
                         "value": "gugu"
                     }
                 ]
+            }
+        ],
+        "city_name": [
+            {
+                "form": "raw",
+                "references": [
+                    {
+                        "type": "column",
+                        "value": "address"
+                    }
+                ],
+                "roles": ["residency"]
+            },
+            {
+                "form": "raw",
+                "references": [
+                    {
+                        "type": "column",
+                        "value": "address"
+                    }
+                ],
+                "roles": ["residency", "mother"]
+            }
+        ],
+        "country_name": [
+            {
+                "form": "raw",
+                "references": [
+                    {
+                        "type": "column",
+                        "value": "address"
+                    }
+                ],
+                "roles": ["residency"]
             }
         ]
     },
